@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThanOrEqual, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from '../../../entities/user.entity';
 import { LoginDto } from './dto/login.dto';
 import { JwtPayload, JwtServiceCustom } from './jwt.service';
@@ -23,9 +23,7 @@ export class AuthService {
   ) {}
 
   async me(id: string) {
-    const user = await this.userRepo.findOne({
-      where: { id },
-    });
+    const user = await this.userRepo.findOneBy({ id });
 
     if (!user) {
       throw new NotFoundException('Usuário não encontrado');
@@ -48,7 +46,6 @@ export class AuthService {
         message: 'Email inválido',
       });
     }
-
     const isPasswordValid = await bcrypt.compare(data.password, user.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException({
@@ -82,11 +79,10 @@ export class AuthService {
       +this.config.get<string>('BCRYPT_HASH_SALT')!,
     );
 
-    const user = await this.userRepo.create({
+    const user = await this.userRepo.save({
       ...data,
       password: hashedPassword,
     });
-    await this.userRepo.save(user);
 
     const payload: JwtPayload = {
       sub: user.id,
@@ -103,7 +99,7 @@ export class AuthService {
     const user = await this.userRepo.findOneBy({ id: userId });
 
     if (!user) {
-      throw new UnauthorizedException('Usuário não encontrado');
+      throw new UnauthorizedException('Token inválido');
     }
 
     const payload: JwtPayload = {
