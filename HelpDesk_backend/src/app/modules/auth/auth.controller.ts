@@ -9,16 +9,25 @@ import {
   Get,
   Res,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { loginSchema, LoginDto } from './dto/login.dto';
 import { ZodValidationPipe } from 'src/app/common/pipes/zod-validation.pipe';
 import { JwtPayload, JwtServiceCustom } from './jwt.service';
 import { Request, Response } from 'express';
 import { RegisterDto, registerSchema } from './dto/register.dto';
+import {
+  ApiMe,
+  ApiLogin,
+  ApiRegister,
+  ApiRefresh,
+  ApiLogout,
+} from './auth.swagger';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 export type AuthRequest = Request & { user: JwtPayload };
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -27,12 +36,14 @@ export class AuthController {
   ) {}
 
   @Get('me')
+  @ApiMe()
   @UseGuards(JwtAuthGuard)
   async me(@Req() req: AuthRequest) {
     return this.authService.me(req.user.sub);
   }
 
   @Post('login')
+  @ApiLogin()
   @UsePipes(new ZodValidationPipe(loginSchema))
   async login(
     @Body() data: LoginDto,
@@ -58,6 +69,7 @@ export class AuthController {
   }
 
   @Post('register')
+  @ApiRegister()
   @UsePipes(new ZodValidationPipe(registerSchema))
   async register(
     @Body() data: RegisterDto,
@@ -84,6 +96,7 @@ export class AuthController {
   }
 
   @Post('refresh')
+  @ApiRefresh()
   async refresh(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
@@ -117,6 +130,7 @@ export class AuthController {
   }
 
   @Post('logout')
+  @ApiLogout()
   logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('access_token');
     res.clearCookie('refresh_token');
