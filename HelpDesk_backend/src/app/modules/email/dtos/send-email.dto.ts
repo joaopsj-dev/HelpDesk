@@ -1,8 +1,8 @@
-export interface SendEmailDTO {
+type SendEmailBase = {
   to: string;
   subject: string;
-  html: string;
+};
 
-  from?: string;
-  text?: string;
-}
+export type SendEmailDTO =
+  | (SendEmailBase & { html: string; text?: string })
+  | (SendEmailBase & { text: string; html?: string });
