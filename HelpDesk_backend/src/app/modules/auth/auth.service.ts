@@ -12,6 +12,7 @@ import { LoginDto } from './dto/login.dto';
 import { JwtPayload, JwtServiceCustom } from './jwt.service';
 import { ConfigService } from '@nestjs/config';
 import { RegisterDto } from './dto/register.dto';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,7 @@ export class AuthService {
     @InjectRepository(User)
     private userRepo: Repository<User>,
     private jwtService: JwtServiceCustom,
+    private emailService: EmailService,
     private readonly config: ConfigService,
   ) {}
 
@@ -91,6 +93,8 @@ export class AuthService {
 
     const access_token = await this.jwtService.generateAccessToken(payload);
     const refresh_token = await this.jwtService.generateRefreshToken(payload);
+
+    await this.emailService.sendWelcomeEmail(user.email, user.name);
 
     return { access_token, refresh_token };
   }
