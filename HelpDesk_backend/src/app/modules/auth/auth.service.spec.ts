@@ -11,8 +11,13 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto';
+import { emailQueue } from '../email/email.queue';
+import { jobs } from 'src/app/common/rules/jobs';
 
 jest.mock('bcrypt');
+jest.mock('../email/email.queue', () => ({
+  emailQueue: { add: jest.fn() },
+}));
 
 const user: User = {
   id: 'valid_id',
@@ -230,6 +235,22 @@ describe('AuthService', () => {
 
       expect(jwtService.generateAccessToken).toHaveBeenCalledWith(payload);
       expect(jwtService.generateRefreshToken).toHaveBeenCalledWith(payload);
+    });
+
+    it('should create job to send email', async () => {
+      userRepo.findOneBy.mockResolvedValue(null);
+      userRepo.save.mockResolvedValue(user);
+      (bcrypt.hash as jest.Mock).mockResolvedValue('hashed_password');
+
+      jest.spyOn(emailQueue, 'add');
+
+      await service.register(registerDto);
+
+      expect(emailQueue.add).toHaveBeenCalledWith(
+        jobs.send_email.name,
+        expect.any(Object),
+        jobs.send_email.options,
+      );
     });
 
     it('should returns tokens of registered user', async () => {

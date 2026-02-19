@@ -13,13 +13,4 @@ export class EmailService {
   async send(data: SendEmailDTO): Promise<void> {
     await this.provider.send(data);
   }
-
-  async sendWelcomeEmail(to: string, name: string) {
-    await this.provider.send({
-      to,
-      subject: 'Bem-vindo ao HelpDesk 🚀',
-      html: `<h1>Olá, ${name}!</h1><p>Sua conta foi criada com sucesso.</p>`,
-      text: `Olá, ${name}! Sua conta foi criada com sucesso.`,
-    });
-  }
 }

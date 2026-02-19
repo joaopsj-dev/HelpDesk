@@ -16,10 +16,11 @@ export class MailtrapProvider implements EmailProvider {
 
   async send(data: SendEmailDTO): Promise<void> {
     await this.transporter.sendMail({
-      from: '"App" <no-reply@app.com>',
+      from: '<no-reply@app.com>',
       to: data.to,
       subject: data.subject,
       html: data.html,
+      text: data.text,
     });
   }
 }

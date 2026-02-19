@@ -13,6 +13,8 @@ import { JwtPayload, JwtServiceCustom } from './jwt.service';
 import { ConfigService } from '@nestjs/config';
 import { RegisterDto } from './dto/register.dto';
 import { EmailService } from '../email/email.service';
+import { emailQueue } from 'src/app/modules/email/email.queue';
+import { jobs } from 'src/app/common/rules/jobs';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +22,6 @@ export class AuthService {
     @InjectRepository(User)
     private userRepo: Repository<User>,
     private jwtService: JwtServiceCustom,
-    private emailService: EmailService,
     private readonly config: ConfigService,
   ) {}
 
@@ -94,7 +95,15 @@ export class AuthService {
     const access_token = await this.jwtService.generateAccessToken(payload);
     const refresh_token = await this.jwtService.generateRefreshToken(payload);
 
-    await this.emailService.sendWelcomeEmail(user.email, user.name);
+    await emailQueue.add(
+      jobs.send_email.name,
+      {
+        to: user.email,
+        subject: 'Bem vindo ao HelpDesk',
+        text: `Olá ${user.name}, sua conta foi criada com sucesso!`,
+      },
+      jobs.send_email.options,
+    );
 
     return { access_token, refresh_token };
   }

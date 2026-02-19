@@ -7,14 +7,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../../../entities/user.entity';
 import { JwtServiceCustom } from './jwt.service';
 import { ConfigModule } from '@nestjs/config';
-import { EmailModule } from '../email/email.module';
 
 @Module({
   imports: [
     ConfigModule,
     TypeOrmModule.forFeature([User]),
     JwtModule.register({}),
-    EmailModule,
   ],
   providers: [AuthService, JwtStrategy, JwtServiceCustom],
   controllers: [AuthController],
