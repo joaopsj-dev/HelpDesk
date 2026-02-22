@@ -1,11 +1,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { UserRole } from 'src/entities/user.entity';
+import { UserRoleEnum } from 'src/entities/user.entity';
 
 export interface JwtPayload {
   sub: string;
-  role: UserRole;
+  role: UserRoleEnum;
 }
 
 @Injectable()

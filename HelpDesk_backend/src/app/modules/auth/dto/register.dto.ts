@@ -9,13 +9,6 @@ import z from 'zod';
 
 export class RegisterSwaggerDto {
   @ApiProperty({
-    description: 'Papel do usuário no sistema',
-    enum: ['admin', 'agent', 'client'],
-    example: 'client',
-  })
-  role: 'admin' | 'agent' | 'client';
-
-  @ApiProperty({
     description: 'Nome completo do usuário',
     minLength: 2,
     example: 'João Silva',
@@ -39,7 +32,6 @@ export class RegisterSwaggerDto {
 
 export const registerSchema = z
   .object({
-    role: zRole,
     name: zName,
     email: zEmail,
     password: zPassword,

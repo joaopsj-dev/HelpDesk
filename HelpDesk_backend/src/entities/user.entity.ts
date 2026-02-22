@@ -6,7 +6,11 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export type UserRole = 'admin' | 'agent' | 'client';
+export enum UserRoleEnum {
+  ADMIN = 'admin',
+  AGENT = 'agent',
+  CLIENT = 'client',
+}
 
 @Entity('users')
 export class User {
@@ -17,7 +21,7 @@ export class User {
   name: string;
 
   @Column({ type: 'varchar', nullable: false })
-  role: UserRole;
+  role: UserRoleEnum;
 
   @Column({ type: 'varchar', nullable: false, unique: true })
   email: string;

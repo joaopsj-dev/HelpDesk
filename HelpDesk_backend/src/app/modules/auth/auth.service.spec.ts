@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { AuthService } from './auth.service';
-import { User } from '../../../entities/user.entity';
+import { User, UserRoleEnum } from '../../../entities/user.entity';
 import { JwtPayload, JwtServiceCustom } from './jwt.service';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -21,7 +21,7 @@ jest.mock('../email/email.queue', () => ({
 
 const user: User = {
   id: 'valid_id',
-  role: 'admin',
+  role: UserRoleEnum.ADMIN,
   name: 'name',
   email: 'email',
   password: 'hashed_password',
@@ -174,7 +174,6 @@ describe('AuthService', () => {
 
   describe('register', () => {
     const registerDto: RegisterDto = {
-      role: user.role,
       email: user.email,
       password: 'valid_password',
       name: user.name,
@@ -217,6 +216,7 @@ describe('AuthService', () => {
 
       expect(userRepo.save).toHaveBeenCalledWith({
         ...registerDto,
+        role: UserRoleEnum.CLIENT,
         password: 'hashed_password',
       });
     });
