@@ -12,7 +12,6 @@ import { LoginDto } from './dto/login.dto';
 import { JwtPayload, JwtServiceCustom } from './jwt.service';
 import { ConfigService } from '@nestjs/config';
 import { RegisterDto } from './dto/register.dto';
-import { EmailService } from '../email/email.service';
 import { emailQueue } from 'src/app/modules/email/email.queue';
 import { jobs } from 'src/app/common/rules/jobs';
 
