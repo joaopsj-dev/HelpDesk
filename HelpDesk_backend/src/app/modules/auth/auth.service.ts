@@ -44,15 +44,13 @@ export class AuthService {
     const user = await this.userRepo.findOneBy({ email: data.email });
     if (!user) {
       throw new UnauthorizedException({
-        field: 'email',
-        message: 'Email inválido',
+        message: 'Credenciais inválidas',
       });
     }
     const isPasswordValid = await bcrypt.compare(data.password, user.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException({
-        field: 'password',
-        message: 'Senha inválida',
+        message: 'Credenciais inválidas',
       });
     }
 
