@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Ticket, TicketStatus } from 'src/entities/ticket.entity';
 import { Repository } from 'typeorm';
 import { CreateTicketDto } from './dtos/create-ticket.dto';
+import { TicketsGateway } from './ticket.gateway';
 
 @Injectable()
 export class TicketsService {
   constructor(
     @InjectRepository(Ticket)
     private readonly ticketRepo: Repository<Ticket>,
+    private readonly ticketsGateway: TicketsGateway,
   ) {}
 
   async create(data: CreateTicketDto, client_id: string): Promise<Ticket> {
@@ -23,11 +25,15 @@ export class TicketsService {
       throw new ConflictException('Já existe um chamado aberto');
     }
 
-    return await this.ticketRepo.save({
+    const ticket = await this.ticketRepo.save({
       title: data.title,
       description: data.description,
       status: TicketStatus.OPEN,
       client_id,
     });
+
+    this.ticketsGateway.server.to('agents').emit('ticket.created', ticket);
+
+    return ticket;
   }
 }
