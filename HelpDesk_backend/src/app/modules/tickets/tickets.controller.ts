@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
   Req,
   UseGuards,
@@ -23,7 +24,14 @@ export class TicketsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UsePipes(new ZodValidationPipe(createTicketSchema))
   @Roles(UserRoleEnum.CLIENT)
-  async create(@Body() data: CreateTicketDto, @Req() req: AuthRequest) {
-    return await this.ticketsService.create(data, req.user.sub);
+  async open(@Body() data: CreateTicketDto, @Req() req: AuthRequest) {
+    return await this.ticketsService.open(data, req.user.sub);
+  }
+
+  @Get('/open')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoleEnum.AGENT)
+  async getOpen() {
+    return await this.ticketsService.getOpen();
   }
 }

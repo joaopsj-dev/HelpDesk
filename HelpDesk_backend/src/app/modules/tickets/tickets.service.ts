@@ -13,7 +13,7 @@ export class TicketsService {
     private readonly ticketsGateway: TicketsGateway,
   ) {}
 
-  async create(data: CreateTicketDto, client_id: string): Promise<Ticket> {
+  async open(data: CreateTicketDto, client_id: string): Promise<Ticket> {
     const existing = await this.ticketRepo.findOne({
       where: {
         client_id,
@@ -35,5 +35,11 @@ export class TicketsService {
     this.ticketsGateway.server.to('agents').emit('ticket.created', ticket);
 
     return ticket;
+  }
+
+  async getOpen(): Promise<Ticket[]> {
+    return await this.ticketRepo.findBy({
+      status: TicketStatus.OPEN,
+    });
   }
 }
