@@ -6,6 +6,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { rateLimit } from './app/common/rules/rate.limit';
 import { AdminModule } from './app/modules/admin/admin.module';
+import { TicketsModule } from './app/modules/tickets/tickets.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { AdminModule } from './app/modules/admin/admin.module';
     }),
     AuthModule,
     AdminModule,
+    TicketsModule,
   ],
   providers: [
     {
